@@ -18,8 +18,15 @@ object FlightEvent {
     if (isAllDigits(cols(4))) "%04d".format(cols(4).toInt) else "", cols(8), cols(9), cols(10), cols(16), 
     cols(17), Try(cols(14).toInt).getOrElse(-1))
 
+  def stringArrayToSeq(cols: Array[String]) = {
+    val e = stringArrayToFlightEvent(cols)
+    Seq[Any](e.uniqueCarrier, e.flightNum, e.tailNum, e.flightDate, e.origin, e.destination, e.arrDelayMins)
+  }
+
+  def isDelayed(cols: Array[String]): Boolean = (Try(cols(14).toInt).getOrElse(-1)) > 0
+
   def persistEvent(e: FlightEvent)(implicit session: DBSession): Future[FlightEvent] = Future {
-    sql" insert into flight_delays (carrier, flight_number, tail_number, flight_date, origin, destination, delay) values (${e.uniqueCarrier}, ${e.flightNum}, ${e.tailNum}, ${e.flightDate}, ${e.origin}, ${e.destination} ,${e.arrDelayMins})".update.apply()
+    // sql" insert into flight_delays (carrier, flight_number, tail_number, flight_date, origin, destination, delay) values (${e.uniqueCarrier}, ${e.flightNum}, ${e.tailNum}, ${e.flightDate}, ${e.origin}, ${e.destination} ,${e.arrDelayMins})".update.apply()
     e
   }
 
